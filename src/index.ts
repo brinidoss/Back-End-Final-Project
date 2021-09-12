@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import shoutRoutes from './routes';
+import homeRoutes from './routes';
 
 const app = express();
 
@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors());
 
 
-app.use("/", shoutRoutes);
+app.use("/", homeRoutes);
 
 const port = 3000;
 

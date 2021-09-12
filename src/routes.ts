@@ -1,15 +1,17 @@
 import express from "express";
 import { ObjectId } from "mongodb";
 import { getClient } from "./db";
-import Shoutout from "./model/Shoutout";
+import Project from "./model/Project";
 
-const shoutRoutes = express.Router();
+const homeRoutes = express.Router();
 
 
-// get 
-shoutRoutes.get("/shoutouts", (req, res) => {
+// get all projects
+homeRoutes.get("/projects", (req, res) => {
+    console.log(getClient());
     getClient().then(client => {
-        return client.db().collection<Shoutout>('homeimprovtest').find().toArray().then(results => {
+        console.log(client);
+        return client.db().collection('homeimprovement').find().toArray().then(results => {
           res.json(results); // send JSON results
         });
       }).catch(err => {
@@ -18,13 +20,13 @@ shoutRoutes.get("/shoutouts", (req, res) => {
       });
 })
 
-// get an apple by id
-shoutRoutes.get("/shoutouts/:id", (req, res) => {
+// get a project by id
+homeRoutes.get("/projects/:id", (req, res) => {
     const id = req.params.id;
     getClient().then(client => {
-      return client.db().collection<Shoutout>('shoutouts').findOne({ _id : new ObjectId(id) }).then(shoutout => {
-        if (shoutout) {
-          res.json(shoutout);
+      return client.db().collection<Project>('homeimprovement').findOne({ _id : new ObjectId(id) }).then(project => {
+        if (project) {
+          res.json(project);
         } else {
           res.status(404).json({message: "Not Found"});
         }
@@ -35,13 +37,13 @@ shoutRoutes.get("/shoutouts/:id", (req, res) => {
     });
 })
 
-// add a donut
-shoutRoutes.post("/shoutouts", (req, res) => {
-    const shoutout = req.body as Shoutout;
+// add a project
+homeRoutes.post("/projects", (req, res) => {
+    const project = req.body as Project;
     getClient().then(client => {
-      return client.db().collection<Shoutout>('shoutouts').insertOne(shoutout).then(result => {
-        shoutout._id = result.insertedId;
-        res.status(201).json(shoutout);
+      return client.db().collection<Project>('homeimprovement').insertOne(project).then(result => {
+        project._id = result.insertedId;
+        res.status(201).json(project);
       });
     }).catch(err => {
       console.error("FAIL", err);
@@ -49,18 +51,18 @@ shoutRoutes.post("/shoutouts", (req, res) => {
     });
 })
 
-// update an apple by id
-shoutRoutes.put("/shoutouts/:id", (req, res) => {
+// update a project by id
+homeRoutes.put("/projects/:id", (req, res) => {
     const id = req.params.id;
-    const shoutout = req.body as Shoutout;
-    delete shoutout._id;
+    const project = req.body as Project;
+    delete project._id;
     getClient().then(client => {
-      return client.db().collection<Shoutout>('shoutouts').replaceOne({ _id: new ObjectId(id) }, shoutout).then(result => {
+      return client.db().collection<Project>('homeimprovement').replaceOne({ _id: new ObjectId(id) }, project).then(result => {
         if (result.modifiedCount === 0) {
           res.status(404).json({message: "Not Found"});
         } else {
-          shoutout._id = new ObjectId(id);
-          res.json(shoutout);
+          project._id = new ObjectId(id);
+          res.json(project);
         }
       });
     }).catch(err => {
@@ -69,11 +71,11 @@ shoutRoutes.put("/shoutouts/:id", (req, res) => {
     });
 })
 
-// delete an apple by id
-shoutRoutes.delete("/shoutouts/:id", (req, res) => {
+// delete a project by id
+homeRoutes.delete("/projects/:id", (req, res) => {
     const id = req.params.id;
     getClient().then(client => {
-      return client.db().collection<Shoutout>('shoutouts').deleteOne({ _id: new ObjectId(id) }).then(result => {
+      return client.db().collection<Project>('homeimprovement').deleteOne({ _id: new ObjectId(id) }).then(result => {
         if (result.deletedCount === 0) {
           res.status(404).json({message: "Not Found"});
         } else {
@@ -87,4 +89,4 @@ shoutRoutes.delete("/shoutouts/:id", (req, res) => {
 })
 
 
-export default shoutRoutes;
+export default homeRoutes;
