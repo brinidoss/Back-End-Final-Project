@@ -42,7 +42,7 @@ homeRoutes.post("/projects", (req, res) => {
     const project = req.body as Project;
     getClient().then(client => {
       return client.db().collection<Project>('homeimprovement').insertOne(project).then(result => {
-        project._id = result.insertedId;
+        project.category._id = result.insertedId;
         res.status(201).json(project);
       });
     }).catch(err => {
@@ -55,13 +55,13 @@ homeRoutes.post("/projects", (req, res) => {
 homeRoutes.put("/projects/:id", (req, res) => {
     const id = req.params.id;
     const project = req.body as Project;
-    delete project._id;
+    delete project.category._id;
     getClient().then(client => {
       return client.db().collection<Project>('homeimprovement').replaceOne({ _id: new ObjectId(id) }, project).then(result => {
         if (result.modifiedCount === 0) {
           res.status(404).json({message: "Not Found"});
         } else {
-          project._id = new ObjectId(id);
+          project.category._id = new ObjectId(id);
           res.json(project);
         }
       });
