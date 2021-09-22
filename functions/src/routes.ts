@@ -9,9 +9,10 @@ const homeRoutes = express.Router();
 // get all projects
 homeRoutes.get("/projects", (req, res) => {
     console.log(getClient());
+    const uid: any = req.query.uid;
     getClient().then(client => {
         console.log(client);
-        return client.db().collection('homeimprovement').find().toArray().then(results => {
+        return client.db().collection('homeimprovement').find({uid: uid}).toArray().then(results => {
           res.json(results); // send JSON results
         });
       }).catch(err => {
